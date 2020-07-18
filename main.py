@@ -5,12 +5,12 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-db.init_app(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/codeblog'
 
 
 
 db = SQLAlchemy()
+db.init_app(app)
 # dep(app)
 #     return appf create_app():
 #     app = Flask(__name__)
