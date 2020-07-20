@@ -1,32 +1,18 @@
 from flask import Flask,render_template,request
 
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
+import mysql.connector
+import mysql.connector
+from mysql.connector import Error
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/codeblog'
 
+connection = mysql.connector.connect(host='localhost',
+                                         database='dev',
+                                         user='root',
+                                         password='root')
+cursor = connection.cursor()
 
-
-db = SQLAlchemy()
-db.init_app(app)
-# dep(app)
-#     return appf create_app():
-#     app = Flask(__name__)
-#     db.init_ap
-
-
-class Contacts(db.Model):
-    sno= db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80),nullable=False)
-    phone_num = db.Column(db.String(12),nullable=False)
-    msg = db.Column(db.String(120),nullable=False)
-    date = db.Column(db.String(12),nullable=True)
-    email = db.Column(db.String(20),nullable=False)
-
-
-
+#mysql = MySQL(app)	# Init
 
 @app.route('/')
 def home():
@@ -39,22 +25,14 @@ def about():
 @app.route('/contact',methods=['GET','POST'])
 def contact():
     if (request.method=='POST'):
-        # add entry to the database
-        name=request.form.get('name')
-        email=request.form.get('email')
-        phone=request.form.get('phone')
-        message=request.form.get('message')
-        # name=request.form.get('name')
-        entry=Contacts(name=name,phone_num=phone,msg=message,date = datetime.now() , email=email)
-
-
-        db.session.add(entry)
-        db.session.commit()
+    	name = request.form.get('name')
+    	email = request.form.get('email')
+    	phone = request.form.get('phone')
+    	msg = request.form.get('message')
+    	cursor.execute(f"insert into contacts(name, phone, email, message) values('{name}', '{phone}', '{email}', '{msg}')")
+    	connection.commit()
+    	cursor.close()
+    	return 'success'
     return render_template('contact.html')
-# app.run() 
-# @app.route('/post')
-# def post():
-#     return render_template('post.html')
- 
 
 app.run(debug=True)
